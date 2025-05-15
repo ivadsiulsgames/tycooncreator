@@ -1,0 +1,22 @@
+{
+  "name": "backonnevermore",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "Roblox",
+    "Nevermore",
+    "Lua"
+  ],
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@quenty/attributeutils": "^14.18.0",
+    "@quenty/binder": "^14.20.0",
+    "@quenty/clienttranslator": "^14.20.0",
+    "@quenty/cmdrservice": "^13.23.0",
+    "@quenty/loader": "^10.9.0",
+    "@quenty/servicebag": "^11.12.0"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}
