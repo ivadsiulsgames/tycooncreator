@@ -1,8 +1,11 @@
-## BackOnNevermore
+> [!WARNING]
+> This is a private repository. Sharing or showing the code inside this repository is strictly forbidden and will result in being removed from the team.
 
-Source code for BackOnNevermore. This game was generated using Nevermore's CLI.
+# Tycoon Creator
 
-# Tools
+Source code for Tycoon Creator. This game was made using the Nevermore Engine libraries.
+
+## Tools
 
 This game uses the following tools
 
@@ -14,15 +17,15 @@ This game uses the following tools
 - [npm](https://nodejs.org/en/download/) - Package manager
 - [Nevermore](https://github.com/Quenty/NevermoreEngine) - Packages
 
-# Building Tycoon Creator
+## Building Tycoon Creator
 
 To build the game, you want to do the following
 
 1. Run `npm install` in a terminal of your choice
 2. Run `rojo serve` to serve the code
 
-# Adding new packages
+## Adding new packages
 
 To add new packages you can run `npm install @quenty/package-name` or whatever the package you want.
 
-**Limited Use License (C) @ivadsiuls 2025**
+**Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License (C) @ivadsiuls 2025**
