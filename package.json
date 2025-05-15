@@ -1,13 +1,16 @@
 {
-  "name": "backonnevermore",
+  "name": "Tycoon Creator",
   "version": "1.0.0",
   "description": "",
   "keywords": [
     "Roblox",
     "Nevermore",
-    "Lua"
+    "Lua",
+    "Tycoon",
+    "Sandbox",
+    "Tycoon Creator"
   ],
-  "license": "UNLICENSED",
+  "license": "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License",
   "dependencies": {
     "@quenty/attributeutils": "^14.18.0",
     "@quenty/binder": "^14.20.0",

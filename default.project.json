@@ -1,5 +1,5 @@
 {
-  "name": "NewProject",
+  "name": "Tycoon Creator",
   "globIgnorePaths": [ "**/.package-lock.json" ],
   "tree": {
     "$className": "DataModel",

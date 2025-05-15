@@ -2,12 +2,16 @@
     "editor.defaultFormatter": "JohnnyMorganz.stylua",
     "cSpell.words": [
         "Aftman",
+        "attributeutils",
+        "clienttranslator",
+        "cmdrservice",
         "johnnymorganz",
         "Kampfkarren",
         "moonwave",
         "quenty",
         "Quenty",
         "rojo",
+        "servicebag",
         "stylua"
     ],
     "editor.formatOnSave": true
