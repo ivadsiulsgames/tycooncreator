@@ -4,13 +4,13 @@ local Blend = require("Blend")
 local Maid = require("Maid")
 local ServiceBag = require("ServiceBag")
 
-local DropperBlock = {}
-DropperBlock.__index = DropperBlock
+local SellPartBlock = {}
+SellPartBlock.__index = SellPartBlock
 
-function DropperBlock.new(buildFrame, _serviceBag: ServiceBag.ServiceBag)
+function SellPartBlock.new(buildFrame, _serviceBag: ServiceBag.ServiceBag)
 	local maid = Maid.new()
 
-	local self = setmetatable({}, DropperBlock)
+	local self = setmetatable({}, SellPartBlock)
 
 	self._maid = maid
 	self._serviceBag = _serviceBag
@@ -24,11 +24,11 @@ function DropperBlock.new(buildFrame, _serviceBag: ServiceBag.ServiceBag)
 	return self
 end
 
-function DropperBlock:Init()
+function SellPartBlock:Init()
 	local render = Blend.New "ImageButton" {
-		Name = "DropperBlockButton",
+		Name = "SellPartBlockButton",
 
-		Image = "rbxassetid://11752199121",
+		Image = "rbxassetid://10049046091",
 
 		BackgroundTransparency = 1,
 
@@ -39,7 +39,7 @@ function DropperBlock:Init()
 		Blend.New "UIAspectRatioConstraint" {},
 
 		[Blend.OnEvent "Activated"] = function()
-			self.BuildServiceClient:StartPlacementMode("Dropper")
+			self.BuildServiceClient:StartPlacementMode("SellPart")
 
 			self.closeButton.Visible = true
 
@@ -76,4 +76,4 @@ function DropperBlock:Init()
 	end)
 end
 
-return DropperBlock
+return SellPartBlock

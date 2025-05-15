@@ -14,7 +14,10 @@ local arrowId = "rbxassetid://293296862"
 local Conveyor = {}
 Conveyor.__index = Conveyor
 
-local function createTexture(part, maid): Texture
+local function createTexture(part, maid)
+	if not part:FindFirstAncestor("Workspace") then return end
+	if part:FindFirstChildWhichIsA("Texture") then return end
+
 	local texture = Instance.new("Texture")
 	texture.Texture = arrowId
 	texture.Face = Enum.NormalId.Top
@@ -46,7 +49,12 @@ end
 function Conveyor.new(part)
 	local maid = Maid.new()
 
+	
 	createTexture(part, maid)
+
+	part:GetPropertyChangedSignal("Parent"):Connect(function()
+		createTexture(part, maid)
+	end)
 
 	return setmetatable({
 		_maid = maid

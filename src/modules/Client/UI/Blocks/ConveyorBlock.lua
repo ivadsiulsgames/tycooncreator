@@ -4,13 +4,13 @@ local Blend = require("Blend")
 local Maid = require("Maid")
 local ServiceBag = require("ServiceBag")
 
-local DropperBlock = {}
-DropperBlock.__index = DropperBlock
+local ConveyorBlock = {}
+ConveyorBlock.__index = ConveyorBlock
 
-function DropperBlock.new(buildFrame, _serviceBag: ServiceBag.ServiceBag)
+function ConveyorBlock.new(buildFrame, _serviceBag: ServiceBag.ServiceBag)
 	local maid = Maid.new()
 
-	local self = setmetatable({}, DropperBlock)
+	local self = setmetatable({}, ConveyorBlock)
 
 	self._maid = maid
 	self._serviceBag = _serviceBag
@@ -24,11 +24,11 @@ function DropperBlock.new(buildFrame, _serviceBag: ServiceBag.ServiceBag)
 	return self
 end
 
-function DropperBlock:Init()
+function ConveyorBlock:Init()
 	local render = Blend.New "ImageButton" {
-		Name = "DropperBlockButton",
+		Name = "ConveyorBlockButton",
 
-		Image = "rbxassetid://11752199121",
+		Image = "rbxassetid://3190781898",
 
 		BackgroundTransparency = 1,
 
@@ -39,7 +39,7 @@ function DropperBlock:Init()
 		Blend.New "UIAspectRatioConstraint" {},
 
 		[Blend.OnEvent "Activated"] = function()
-			self.BuildServiceClient:StartPlacementMode("Dropper")
+			self.BuildServiceClient:StartPlacementMode("Conveyor")
 
 			self.closeButton.Visible = true
 
@@ -76,4 +76,4 @@ function DropperBlock:Init()
 	end)
 end
 
-return DropperBlock
+return ConveyorBlock

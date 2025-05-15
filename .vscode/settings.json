@@ -9,5 +9,6 @@
         "Quenty",
         "rojo",
         "stylua"
-    ]
+    ],
+    "editor.formatOnSave": true
 }

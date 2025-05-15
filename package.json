@@ -14,7 +14,8 @@
     "@quenty/clienttranslator": "^14.20.0",
     "@quenty/cmdrservice": "^13.23.0",
     "@quenty/loader": "^10.9.0",
-    "@quenty/servicebag": "^11.12.0"
+    "@quenty/servicebag": "^11.12.0",
+    "@quenty/sounds": "^10.11.0"
   },
   "publishConfig": {
     "access": "restricted"

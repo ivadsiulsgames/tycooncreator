@@ -64,6 +64,8 @@ function BuildGuiServiceClient:Start()
 		local buildFrame = buildScreen.BuildFrame
 
 		require("DropperBlock").new(buildFrame, self._serviceBag)
+		require("ConveyorBlock").new(buildFrame, self._serviceBag)
+		require("SellPartBlock").new(buildFrame, self._serviceBag)
 	end))
 end
 
