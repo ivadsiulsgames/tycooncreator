@@ -27,10 +27,17 @@ function BuildServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 	-- External
 
 	-- Internal
+    self.InputServiceClient = self._serviceBag:GetService(require("InputServiceClient"))
+
     self.PlaceBlockRemote = ReplicatedStorage.Remotes.PlaceBlock
+
+    self.inPlacement = false
 end
 
 function BuildServiceClient:StartPlacementMode(blockName: string)
+    if self.inPlacement == true then return end
+    self.inPlacement = true
+
     local block = ReplicatedStorage.Assets.Blocks[blockName]
 
     local previewBlock: Model = block:Clone()
@@ -49,11 +56,14 @@ function BuildServiceClient:StartPlacementMode(blockName: string)
 
     mouse.TargetFilter = previewBlock
 
-    RunService:BindToRenderStep("Building", Enum.RenderPriority.Input.Value-1, function(delta)
+    local blockRot = Vector3.new(0, 0, 0)
+
+    RunService:BindToRenderStep("Building", Enum.RenderPriority.Input.Value - 1, function(delta)
         if not mouse.Hit or not mouse.Target then return end
 
         local blockPart = previewBlock.PrimaryPart
-        local cframe = CalculateGridCF(mouse.Hit.Position, Vector3.new(0, 1, 0), mouse.Target, false, 0)
+        local gridCframe = CalculateGridCF(mouse.Hit.Position, Vector3.new(0, 1, 0), mouse.Target, false, 0)
+        local cframe = gridCframe * CFrame.Angles(math.rad(blockRot.X), math.rad(blockRot.Y), math.rad(blockRot.Z))
 
         previewBlock:PivotTo(blockPart.CFrame:Lerp(cframe, 0.75 * 60 * delta))
 
@@ -71,10 +81,32 @@ function BuildServiceClient:StartPlacementMode(blockName: string)
             end
         end
     end)
+
+    local rotateConn
+    
+    rotateConn = self.InputServiceClient:BindToSignal("RotateBuild", function(_, _)
+        blockRot += Vector3.new(0, 90, 0)
+    end)
+
+    local buildConn
+
+    buildConn = self.InputServiceClient:BindToSignal("Build", function(_, _)
+        self:PlaceBlock(blockName, mouse.Hit.Position, mouse.Target, blockRot)
+
+        previewBlock:Destroy()
+
+        RunService:UnbindFromRenderStep("Building")
+
+        self.inPlacement = false
+        mouse.TargetFilter = nil
+
+        rotateConn:Disconnect()
+        buildConn:Disconnect() 
+    end)
 end
 
-function BuildServiceClient:PlaceBlock(blockName: string)
-    self.PlaceBlockRemote:FireServer(blockName)
+function BuildServiceClient:PlaceBlock(blockName: string, hitPos: Vector3, mouseTarget: Instance, yRot: Vector3)
+    self.PlaceBlockRemote:FireServer(blockName, hitPos, mouseTarget, yRot)
 end
 
 

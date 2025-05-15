@@ -20,6 +20,7 @@ function GameServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 	serviceBag:GetService(require("GuiServiceClient"))
 	serviceBag:GetService(require("BinderServiceClient"))
 	serviceBag:GetService(require("BuildServiceClient"))
+	serviceBag:GetService(require("InputServiceClient"))
 end
 
 return GameServiceClient

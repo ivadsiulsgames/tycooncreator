@@ -15,7 +15,7 @@ function BinderServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 end
 
 function BinderServiceClient:Start()
-    local Binders = script.Parent.Binders:GetDescendants()
+    local Binders = script.Parent.Parent.Binders:GetDescendants()
     
     for _, binder in Binders do
         if binder:IsA("ModuleScript") then

@@ -25,4 +25,4 @@ To build the game, you want to do the following
 
 To add new packages you can run `npm install @quenty/package-name` or whatever the package you want.
 
-**Limited Use License (c) @ivadsiuls 2025**
+**Limited Use License (C) @ivadsiuls 2025**
