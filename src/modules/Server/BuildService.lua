@@ -63,6 +63,7 @@ function BuildService:_connectToPlaceBlockRemote()
 						and not Players:GetPlayerFromCharacter(part.Parent)
 						and not Players:GetPlayerFromCharacter(part.Parent.Parent)
 						and part:FindFirstAncestor("Workspace")
+						and not part:HasTag("CashPart")
 					then
 						partsInside += 1
 					end

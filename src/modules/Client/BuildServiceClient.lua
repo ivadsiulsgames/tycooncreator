@@ -36,6 +36,7 @@ function BuildServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 	self.PlaceBlockRemote = ReplicatedStorage.Remotes.PlaceBlock
 
 	self.inPlacement = false
+	self.placingBlockName = nil
 
 	self.previewBlock = nil
 
@@ -43,6 +44,14 @@ function BuildServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 	self.rotateConn = nil
 
 	self.PlacementStopped = Signal.new() :: Signal.Signal<any>
+end
+
+function BuildServiceClient:GetPlacingBlockName()
+	return self.placingBlockName
+end
+
+function BuildServiceClient:IsPlacing(): boolean
+	return self.inPlacement
 end
 
 function BuildServiceClient:GetPlacementStoppedSignal()
@@ -59,6 +68,8 @@ function BuildServiceClient:StartPlacementMode(blockName: string)
 	local canPlace = true
 
 	self.previewBlock = block:Clone()
+	self.placingBlockName = self.previewBlock.Name
+
 	local previewBlock = self.previewBlock
 	previewBlock.Name = "Preview"
 
@@ -118,6 +129,7 @@ function BuildServiceClient:StartPlacementMode(blockName: string)
 					and not part:HasTag("Buildable")
 					and not Players:GetPlayerFromCharacter(part.Parent)
 					and not Players:GetPlayerFromCharacter(part.Parent.Parent)
+					and not part:HasTag("CashPart")
 				then
 					partsInside += 1
 				end
@@ -148,6 +160,8 @@ function BuildServiceClient:StartPlacementMode(blockName: string)
 		RunService:UnbindFromRenderStep("Building")
 
 		self.inPlacement = false
+		self.placingBlockName = nil
+
 		mouse.TargetFilter = nil
 
 		if canPlace == false then
@@ -171,6 +185,8 @@ function BuildServiceClient:StopPlacementMode()
 	RunService:UnbindFromRenderStep("Building")
 
 	self.inPlacement = false
+	self.placingBlockName = nil
+
 	mouse.TargetFilter = nil
 
 	self.PlacementStopped:Fire()
