@@ -196,7 +196,7 @@ function BuildServiceClient:StopPlacementMode()
 end
 
 function BuildServiceClient:PlaceBlock(blockName: string, hitPos: Vector3, mouseTarget: Instance, yRot: Vector3)
-	self.PlaceBlockRemote:FireServer(blockName, hitPos, mouseTarget, yRot)
+	self.PlaceBlockRemote:FireServer(blockName, hitPos, mouseTarget, yRot, Players.LocalPlayer)
 end
 
 return BuildServiceClient

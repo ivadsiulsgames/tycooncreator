@@ -28,7 +28,7 @@ end
 
 function BuildService:_connectToPlaceBlockRemote()
 	self.PlaceBlockRemote.OnServerEvent:Connect(
-		function(_, blockName: string, hitPos: Vector3, mouseTarget: Instance, blockRot: Vector3)
+		function(_, blockName: string, hitPos: Vector3, mouseTarget: Instance, blockRot: Vector3, blockOwner: Player)
 			if not mouseTarget or not hitPos or not mouseTarget:HasTag("Buildable") or not blockRot then
 				return
 			end
@@ -75,6 +75,7 @@ function BuildService:_connectToPlaceBlockRemote()
 				return
 			end
 
+			blockClone:SetAttribute("Owner", blockOwner.UserId)
 			blockClone.Parent = workspace.Blocks
 		end
 	)

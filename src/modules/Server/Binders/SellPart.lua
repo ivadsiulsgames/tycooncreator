@@ -1,4 +1,5 @@
 local CollectionService = game:GetService("CollectionService")
+local Players = game:GetService("Players")
 
 local require = require(script.Parent.loader).load(script)
 
@@ -6,21 +7,23 @@ local Binder = require("Binder")
 local Maid = require("Maid")
 local ServiceBag = require("ServiceBag")
 
-
 local SellPart = {}
 SellPart.__index = SellPart
 
-local cash = 0
-
 local function onTouched(otherPart, _serviceBag: ServiceBag.ServiceBag)
-	if CollectionService:HasTag(otherPart, "CashPart") then
-		otherPart:Destroy()
-		cash += otherPart:GetAttribute("CashValue")
-		print(cash)
+	if not CollectionService:HasTag(otherPart, "CashPart") then
+		return
 	end
+
+	local CashService = _serviceBag:GetService(require("CashService")) -- doesn't work because servicebag is returning nil?
+
+	otherPart:Destroy()
+
+	CashService:AddCash(Players:GetPlayerByUserId(otherPart:GetAttribute("Owner")), otherPart:GetAttribute("CashValue"))
 end
 
 function SellPart.new(part, _serviceBag: ServiceBag.ServiceBag)
+	print(_serviceBag)
 	local maid = Maid.new()
 
 	part.Touched:Connect(function(otherPart)
@@ -28,7 +31,7 @@ function SellPart.new(part, _serviceBag: ServiceBag.ServiceBag)
 	end)
 
 	return setmetatable({
-		_maid = maid
+		_maid = maid,
 	}, SellPart)
 end
 

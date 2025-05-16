@@ -4,8 +4,8 @@
 
 local require = require(script.Parent.loader).load(script)
 
-local ServiceBag = require("ServiceBag")
 local Maid = require("Maid")
+local ServiceBag = require("ServiceBag")
 
 local GuiServiceClient = {}
 GuiServiceClient.ServiceName = "GuiServiceClient"
@@ -19,8 +19,7 @@ function GuiServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 
 	-- Internal
 	self._serviceBag:GetService(require("BuildGuiServiceClient"))
-
+	self._serviceBag:GetService(require("CashGuiServiceClient"))
 end
-
 
 return GuiServiceClient

@@ -3,7 +3,7 @@ local require = require(script.Parent.loader).load(script)
 local Binder = require("Binder")
 local Maid = require("Maid")
 local RxAttributeUtils = require("RxAttributeUtils")
-
+local Debris = game:GetService("Debris")
 
 local Dropper = {}
 Dropper.__index = Dropper
@@ -18,13 +18,20 @@ local function createCashPart(_, dropperPart, cashVal)
 
 	newPart:AddTag("CashPart")
 	newPart:SetAttribute("CashValue", cashVal)
+	newPart:SetAttribute("Owner", dropperPart.Parent:GetAttribute("Owner"))
+
+	Debris:AddItem(newPart, 90)
 
 	newPart.Parent = workspace
 end
 
 local function startLoop(model, maid)
-	if not model:FindFirstAncestor("Workspace") then return end
-	if model:GetAttribute("Looping") == true then return end
+	if not model:FindFirstAncestor("Workspace") then
+		return
+	end
+	if model:GetAttribute("Looping") == true then
+		return
+	end
 
 	model:SetAttribute("Looping", true)
 
@@ -42,13 +49,15 @@ local function startLoop(model, maid)
 		cashVal = value
 	end))
 
-	task.spawn(function()
-		while model do
+	model:SetAttribute("Enabled", true)
+
+	maid:GiveTask(task.spawn(function()
+		while true do
 			createCashPart(maid, dropperPart, cashVal)
 			task.wait(rate)
 		end
-	end)
-end	
+	end))
+end
 
 function Dropper.new(model)
 	local maid = Maid.new()
@@ -60,7 +69,7 @@ function Dropper.new(model)
 	end)
 
 	return setmetatable({
-		_maid = maid
+		_maid = maid,
 	}, Dropper)
 end
 

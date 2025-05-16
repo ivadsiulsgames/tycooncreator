@@ -43,7 +43,7 @@ function BuildGuiServiceClient:Start()
 
 			BackgroundTransparency = 0.5,
 			BackgroundColor3 = Blend.Spring(
-				RxAttributeUtils.observeAttribute(workspace, "Color", Color3.new(0, 0, 0)),
+				RxAttributeUtils.observeAttribute(Players.LocalPlayer.PlayerGui, "PrimaryColor", Color3.new(0, 0, 0)),
 				3
 			),
 
