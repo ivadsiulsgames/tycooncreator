@@ -3,20 +3,11 @@
 ]=]
 
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 
 local require = require(script.Parent.loader).load(script)
 
-local DataStore = require("DataStore")
-
 local Maid = require("Maid")
 local ServiceBag = require("ServiceBag")
-
-local dataStoreName = "game"
-
-if RunService:IsStudio() then
-	dataStoreName = "studio"
-end
 
 local DataService = {}
 DataService.ServiceName = "DataService"
