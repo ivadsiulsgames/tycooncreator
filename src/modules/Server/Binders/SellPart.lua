@@ -17,9 +17,15 @@ local function onTouched(otherPart, _serviceBag: ServiceBag.ServiceBag)
 
 	local CashService = _serviceBag:GetService(require("CashService"))
 
+	local player = Players:GetPlayerByUserId(otherPart:GetAttribute("Owner"))
+
 	otherPart:Destroy()
 
-	CashService:AddCash(Players:GetPlayerByUserId(otherPart:GetAttribute("Owner")), otherPart:GetAttribute("CashValue"))
+	if not player then
+		return
+	end
+
+	CashService:AddCash(player, otherPart:GetAttribute("CashValue"))
 end
 
 function SellPart.new(part, _serviceBag: ServiceBag.ServiceBag)

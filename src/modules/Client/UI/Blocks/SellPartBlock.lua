@@ -57,7 +57,7 @@ function SellPartBlock:Init()
 		},
 
 		[Blend.OnEvent "Activated"] = function()
-			if self.BuildServiceClient:IsPlacing() then
+			if self.BuildServiceClient:IsPlacing() or self.BuildServiceClient:IsDeleting() then
 				return
 			end
 

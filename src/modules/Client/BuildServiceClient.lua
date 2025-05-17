@@ -8,6 +8,7 @@ local RunService = game:GetService("RunService")
 
 local require = require(script.Parent.loader).load(script)
 
+local AccelTween = require("AccelTween")
 local Maid = require("Maid")
 local ServiceBag = require("ServiceBag")
 local Signal = require("Signal")
@@ -34,14 +35,19 @@ function BuildServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 	self.InputServiceClient = self._serviceBag:GetService(require("InputServiceClient"))
 
 	self.PlaceBlockRemote = ReplicatedStorage.Remotes.PlaceBlock
+	self.DeleteBlockRemote = ReplicatedStorage.Remotes.DeleteBlock
 
 	self.inPlacement = false
+	self.inDeleting = false
+
 	self.placingBlockName = nil
 
 	self.previewBlock = nil
 
 	self.buildConn = nil
 	self.rotateConn = nil
+
+	self.deleteConn = nil
 
 	self.PlacementStopped = Signal.new() :: Signal.Signal<any>
 end
@@ -54,12 +60,16 @@ function BuildServiceClient:IsPlacing(): boolean
 	return self.inPlacement
 end
 
+function BuildServiceClient:IsDeleting(): boolean
+	return self.inDeleting
+end
+
 function BuildServiceClient:GetPlacementStoppedSignal()
 	return self.PlacementStopped
 end
 
 function BuildServiceClient:StartPlacementMode(blockName: string)
-	if self.inPlacement == true then
+	if self.inPlacement == true or self.inDeleting == true then
 		return
 	end
 	self.inPlacement = true
@@ -197,6 +207,93 @@ end
 
 function BuildServiceClient:PlaceBlock(blockName: string, hitPos: Vector3, mouseTarget: Instance, yRot: Vector3)
 	self.PlaceBlockRemote:FireServer(blockName, hitPos, mouseTarget, yRot, Players.LocalPlayer)
+end
+
+function BuildServiceClient:StartDeleteMode()
+	if self.inPlacement == true then
+		self:StopPlacementMode()
+	elseif self.inDeleting then
+		return
+	end
+	self.inDeleting = true
+
+	local deletingHighlight = Instance.new("Highlight")
+	deletingHighlight.FillTransparency = 1
+	deletingHighlight.OutlineColor = Color3.fromRGB(255, 0, 0)
+
+	deletingHighlight.Adornee = nil
+
+	deletingHighlight.Parent = workspace.CurrentCamera
+
+	local selectedBlock = nil
+
+	RunService:BindToRenderStep("Deleting", Enum.RenderPriority.Input.Value - 1, function()
+		if not mouse.Target then
+			return
+		end
+
+		local block = mouse.Target.Parent
+
+		if not block:HasTag("Block") then
+			block = mouse.Target.Parent.Parent
+
+			if not block:HasTag("Block") then
+				deletingHighlight.Adornee = nil
+				return
+			else
+				mouse.TargetFilter = mouse.Target.Parent
+			end
+		end
+
+		deletingHighlight.Adornee = block
+		selectedBlock = block
+	end)
+
+	self.deleteConn = self.InputServiceClient:BindToSignal("DeleteBlock", function(_, _)
+		self:DeleteBlock(selectedBlock)
+
+		deletingHighlight:Destroy()
+		SoundUtils.playFromId(Sounds.DeleteBlock)
+
+		RunService:UnbindFromRenderStep("Deleting")
+
+		self.inDeleting = false
+
+		self.deleteConn:Disconnect()
+	end)
+end
+
+function BuildServiceClient:DeleteBlock(block: Model)
+	if not block then
+		return
+	end
+
+	local tween = AccelTween.new()
+	tween.t = 1
+
+	for _, part in block:GetDescendants() do
+		if part:IsA("BasePart") or part:IsA("Texture") then
+			if part:IsA("BasePart") then
+				part.CanCollide = false
+			end
+
+			if part == block.PrimaryPart or part:IsDescendantOf(block:FindFirstChild("Hitboxes")) then
+				continue
+			end
+
+			local conn = RunService.PreRender:Connect(function()
+				part.Transparency = tween.p
+			end)
+
+			task.delay(tween.rtime, function()
+				conn:Disconnect()
+			end)
+		end
+	end
+
+	task.wait(tween.rtime)
+
+	self.DeleteBlockRemote:FireServer(block)
 end
 
 return BuildServiceClient

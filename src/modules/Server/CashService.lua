@@ -28,6 +28,10 @@ function CashService:GetCash(player: Player)
 end
 
 function CashService:AddCash(player: Player, increment: number)
+	if not player then
+		return
+	end
+
 	local cashValue = self:GetCash(player)
 
 	cashValue.Value += increment

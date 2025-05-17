@@ -20,6 +20,7 @@ function GuiServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 	-- Internal
 	self._serviceBag:GetService(require("BuildGuiServiceClient"))
 	self._serviceBag:GetService(require("CashGuiServiceClient"))
+	self._serviceBag:GetService(require("DeleteGuiServiceClient"))
 end
 
 return GuiServiceClient

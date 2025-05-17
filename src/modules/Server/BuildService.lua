@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local require = require(script.Parent.loader).load(script)
 
+local Maid = require("Maid")
 local ServiceBag = require("ServiceBag")
 
 local CalculateGridCF = require("CalculateGridCF")
@@ -17,16 +18,18 @@ BuildService.ServiceName = "BuildService"
 function BuildService:Init(serviceBag: ServiceBag.ServiceBag)
 	assert(not self._serviceBag, "Already initialized")
 	self._serviceBag = assert(serviceBag, "No serviceBag")
+	self._maid = Maid.new()
 
 	-- External
 
 	-- Internal
-	self.PlaceBlockRemote = ReplicatedStorage.Remotes.PlaceBlock
+	self.PlaceBlockRemote = ReplicatedStorage.Remotes.PlaceBlock :: RemoteEvent
+	self.DeleteBlockRemote = ReplicatedStorage.Remotes.DeleteBlock :: RemoteEvent
 
-	self:_connectToPlaceBlockRemote()
+	self:_connectToRemotes()
 end
 
-function BuildService:_connectToPlaceBlockRemote()
+function BuildService:_connectToRemotes()
 	self.PlaceBlockRemote.OnServerEvent:Connect(
 		function(_, blockName: string, hitPos: Vector3, mouseTarget: Instance, blockRot: Vector3, blockOwner: Player)
 			if not mouseTarget or not hitPos or not mouseTarget:HasTag("Buildable") or not blockRot then
@@ -76,9 +79,22 @@ function BuildService:_connectToPlaceBlockRemote()
 			end
 
 			blockClone:SetAttribute("Owner", blockOwner.UserId)
+			blockClone:AddTag("Block")
 			blockClone.Parent = workspace.Blocks
 		end
 	)
+
+	self.DeleteBlockRemote.OnServerEvent:Connect(function(player, block)
+		if not block then
+			return
+		end
+
+		if Players:GetPlayerByUserId(block:GetAttribute("Owner")) ~= player then
+			return
+		end
+
+		block:Destroy()
+	end)
 end
 
 return BuildService

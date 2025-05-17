@@ -12,11 +12,12 @@ local Signal = require("Signal")
 local InputSettings = require("InputSettings")
 
 type ControlSignals = {
-    BuildActivatedSignal: Signal.Signal<any>,
-    RotateBuildActivatedSignal: Signal.Signal<any>
+	BuildActivatedSignal: Signal.Signal<any>,
+	RotateBuildActivatedSignal: Signal.Signal<any>,
+	DeleteBlockActivatedSignal: Signal.Signal<any>,
 }
 
-type ControlSignalName = "Build" | "RotateBuild"
+type ControlSignalName = "Build" | "RotateBuild" | "DeleteBlock"
 
 type ControlSignalCallback = (inputState: Enum.UserInputState, inputObj: InputObject) -> ()
 
@@ -31,60 +32,82 @@ function InputServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 
 	-- Internal
 
-    self.ControlSignals = {
-        BuildActivatedSignal = Signal.new(),
-        RotateBuildActivatedSignal = Signal.new()
-    } :: ControlSignals
+	self.ControlSignals = {
+		BuildActivatedSignal = Signal.new(),
+		RotateBuildActivatedSignal = Signal.new(),
+		DeleteBlockActivatedSignal = Signal.new(),
+	} :: ControlSignals
 
-    self.isBound = false
+	self.isBound = false
 end
 
 function InputServiceClient:Start()
-    self:BindControls()
+	self:BindControls()
 end
 
 function InputServiceClient:_handleAction(action: string, inputState: Enum.UserInputState, inputObj: InputObject)
-    if inputState == Enum.UserInputState.End then
-        local signalName = `{action}ActivatedSignal`
+	if inputState == Enum.UserInputState.End then
+		local signalName = `{action}ActivatedSignal`
 
-        self.ControlSignals[signalName]:Fire(inputState, inputObj)
-        return Enum.ContextActionResult.Pass
-    else
-        return Enum.ContextActionResult.Pass
-    end
+		self.ControlSignals[signalName]:Fire(inputState, inputObj)
+		return Enum.ContextActionResult.Pass
+	else
+		return Enum.ContextActionResult.Pass
+	end
 end
 
 function InputServiceClient:BindControls()
-    if self.isBound then return end
-    self.isBound = true
+	if self.isBound then
+		return
+	end
+	self.isBound = true
 
-    ContextActionService:BindAction("Build", function(...)
-            self:_handleAction(...)
-        end,
-        InputSettings.BUILD_INPUT.MOBILE, InputSettings.BUILD_INPUT.PC, InputSettings.BUILD_INPUT.CONSOLE)
+	ContextActionService:BindAction("Build", function(...)
+		self:_handleAction(...)
+	end, InputSettings.BUILD_INPUT.MOBILE, InputSettings.BUILD_INPUT.PC, InputSettings.BUILD_INPUT.CONSOLE)
 
-    ContextActionService:BindAction("RotateBuild", function(...)
-            self:_handleAction(...)
-        end,
-        InputSettings.ROTATE_BUILD_INPUT.MOBILE, InputSettings.ROTATE_BUILD_INPUT.PC, InputSettings.ROTATE_BUILD_INPUT.CONSOLE)
+	ContextActionService:BindAction(
+		"RotateBuild",
+		function(...)
+			self:_handleAction(...)
+		end,
+		InputSettings.ROTATE_BUILD_INPUT.MOBILE,
+		InputSettings.ROTATE_BUILD_INPUT.PC,
+		InputSettings.ROTATE_BUILD_INPUT.CONSOLE
+	)
+
+	ContextActionService:BindAction(
+		"DeleteBlock",
+		function(...)
+			self:_handleAction(...)
+		end,
+		InputSettings.DELETE_BLOCK_INPUT.MOBILE,
+		InputSettings.DELETE_BLOCK_INPUT.PC,
+		InputSettings.DELETE_BLOCK_INPUT.CONSOLE
+	)
 end
 
 function InputServiceClient:UnbindControls()
-    if self.isBound then return end
-    self.isBound = true
+	if self.isBound then
+		return
+	end
+	self.isBound = true
 
-    ContextActionService:UnbindAction("Build")
+	ContextActionService:UnbindAction("Build")
 end
 
-function InputServiceClient:BindToSignal(signalName: ControlSignalName, signalCallback: ControlSignalCallback): Signal.Connection<any>
-    local trueName = `{signalName}ActivatedSignal`
-    local signal = self.ControlSignals[trueName]
+function InputServiceClient:BindToSignal(
+	signalName: ControlSignalName,
+	signalCallback: ControlSignalCallback
+): Signal.Connection<any>
+	local trueName = `{signalName}ActivatedSignal`
+	local signal = self.ControlSignals[trueName]
 
-    if signal then
-        return signal:Connect(signalCallback)
-    else
-        error(`Couldn't find signal: {signalName} ({trueName})`)
-    end
+	if signal then
+		return signal:Connect(signalCallback)
+	else
+		error(`Couldn't find signal: {signalName} ({trueName})`)
+	end
 end
 
 return InputServiceClient
