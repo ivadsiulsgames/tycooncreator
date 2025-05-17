@@ -15,7 +15,7 @@ local function onTouched(otherPart, _serviceBag: ServiceBag.ServiceBag)
 		return
 	end
 
-	local CashService = _serviceBag:GetService(require("CashService")) -- doesn't work because servicebag is returning nil?
+	local CashService = _serviceBag:GetService(require("CashService"))
 
 	otherPart:Destroy()
 
@@ -23,7 +23,6 @@ local function onTouched(otherPart, _serviceBag: ServiceBag.ServiceBag)
 end
 
 function SellPart.new(part, _serviceBag: ServiceBag.ServiceBag)
-	print(_serviceBag)
 	local maid = Maid.new()
 
 	part.Touched:Connect(function(otherPart)
@@ -41,6 +40,5 @@ function SellPart:Destroy()
 end
 
 local binder = Binder.new("SellPart", SellPart)
-binder:Start() -- listens for new instances and connects events
 
-return SellPart
+return binder

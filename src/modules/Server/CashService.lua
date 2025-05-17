@@ -16,30 +16,29 @@ function CashService:Init(serviceBag: ServiceBag.ServiceBag)
 	-- External
 
 	-- Internal
-    self.DataService = self._serviceBag:GetService(require("DataService"))
+	self.DataService = self._serviceBag:GetService(require("DataService"))
 end
 
 function CashService:GetCash(player: Player)
-    local playerData = self.DataService:GetPlayerDataFolder(player)
+	local playerData = self.DataService:GetPlayerDataFolder(player)
 
-    local cashValue =  assert(playerData:FindFirstChild("CashValue"), "CashValue IntValue not found.")
+	local cashValue = assert(playerData:FindFirstChild("Cash"), "CashValue IntValue not found.")
 
-    return cashValue
+	return cashValue
 end
 
 function CashService:AddCash(player: Player, increment: number)
-    local cashValue = self:GetCash(player)
+	local cashValue = self:GetCash(player)
 
-    cashValue.Value += increment
+	cashValue.Value += increment
 end
 
 function CashService:RemoveCash(player: Player, decrement: number)
-    local cashValue = self:GetCash(player)
+	local cashValue = self:GetCash(player)
 
-    cashValue.Value -= decrement
+	cashValue.Value -= decrement
 end
 
-function CashService:Start()
-end
+function CashService:Start() end
 
 return CashService

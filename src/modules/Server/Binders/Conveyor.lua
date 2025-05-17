@@ -1,10 +1,9 @@
 local require = require(script.Parent.loader).load(script)
 
 local Binder = require("Binder")
+local Blend = require("Blend")
 local Maid = require("Maid")
 local RxAttributeUtils = require("RxAttributeUtils")
-local Blend = require("Blend")
-
 
 local Conveyor = {}
 Conveyor.__index = Conveyor
@@ -21,7 +20,7 @@ function Conveyor.new(part)
 	setVelocity(part, maid)
 
 	return setmetatable({
-		_maid = maid
+		_maid = maid,
 	}, Conveyor)
 end
 
@@ -31,6 +30,5 @@ function Conveyor:Destroy()
 end
 
 local binder = Binder.new("Conveyor", Conveyor)
-binder:Start() -- listens for new instances and connects events
 
-return Conveyor
+return binder

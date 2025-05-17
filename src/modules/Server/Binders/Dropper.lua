@@ -79,6 +79,5 @@ function Dropper:Destroy()
 end
 
 local binder = Binder.new("Dropper", Dropper)
-binder:Start() -- listens for new instances and connects events
 
-return Dropper
+return binder

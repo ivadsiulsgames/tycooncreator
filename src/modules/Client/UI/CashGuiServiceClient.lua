@@ -78,7 +78,7 @@ function CashGuiServiceClient:Start()
 		local playerData = Players.LocalPlayer:WaitForChild("PlayerData")
 		local cashValue = playerData:WaitForChild("Cash")
 
-		cashLabel.Text = `<b>${cashValue.Value}</b>`
+		cashLabel.Text = `<b>$999,999</b>`
 
 		cashValue.Changed:Connect(function(value)
 			cashLabel.Text = `<b>${value}</b>`
