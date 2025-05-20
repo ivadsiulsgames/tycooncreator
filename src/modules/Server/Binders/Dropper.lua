@@ -1,3 +1,5 @@
+local HttpService = game:GetService("HttpService")
+
 local require = require(script.Parent.loader).load(script)
 
 local Binder = require("Binder")
@@ -17,6 +19,7 @@ local function createCashPart(_, dropperPart, cashVal)
 	newPart.Name = "cashPart"
 
 	newPart:AddTag("CashPart")
+	newPart:SetAttribute("Id", HttpService:GenerateGUID(false))
 	newPart:SetAttribute("CashValue", cashVal)
 	newPart:SetAttribute("Owner", dropperPart.Parent:GetAttribute("Owner"))
 

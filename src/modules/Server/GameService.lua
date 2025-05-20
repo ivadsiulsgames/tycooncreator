@@ -14,13 +14,13 @@ function GameService:Init(serviceBag: ServiceBag.ServiceBag)
 	self._serviceBag = assert(serviceBag, "No serviceBag")
 
 	-- External
-	self._serviceBag:GetService(require("CmdrService"))
 
 	-- Internal
 	serviceBag:GetService(require("BinderService"))
 	serviceBag:GetService(require("BuildService"))
 	serviceBag:GetService(require("DataService"))
 	serviceBag:GetService(require("CashService"))
+	serviceBag:GetService(require("CommandsService"))
 end
 
 return GameService

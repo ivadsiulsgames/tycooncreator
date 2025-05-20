@@ -162,7 +162,7 @@ function BuildServiceClient:StartPlacementMode(blockName: string)
 		blockRot += Vector3.new(0, 90, 0)
 	end)
 
-	self.buildConn = self.InputServiceClient:BindToSignal("Build", function(_, _)
+	self.buildConn = self.InputServiceClient:BindToSignal("BuildOrDelete", function(_, _)
 		self:PlaceBlock(blockName, mouse.Hit.Position, mouse.Target, blockRot)
 
 		previewBlock:Destroy()
@@ -249,13 +249,15 @@ function BuildServiceClient:StartDeleteMode()
 		selectedBlock = block
 	end)
 
-	self.deleteConn = self.InputServiceClient:BindToSignal("DeleteBlock", function(_, _)
-		self:DeleteBlock(selectedBlock)
-
-		deletingHighlight:Destroy()
-		SoundUtils.playFromId(Sounds.DeleteBlock)
+	self.deleteConn = self.InputServiceClient:BindToSignal("BuildOrDelete", function(_, _)
+		task.spawn(function()
+			self:DeleteBlock(selectedBlock)
+		end)
 
 		RunService:UnbindFromRenderStep("Deleting")
+		deletingHighlight:Destroy()
+
+		SoundUtils.playFromId(Sounds.DeleteBlock)
 
 		self.inDeleting = false
 
@@ -294,6 +296,12 @@ function BuildServiceClient:DeleteBlock(block: Model)
 	task.wait(tween.rtime)
 
 	self.DeleteBlockRemote:FireServer(block)
+end
+
+function BuildServiceClient:Start()
+	self.InputServiceClient:BindToSignal("DeleteMode", function(_, _)
+		self:StartDeleteMode()
+	end)
 end
 
 return BuildServiceClient

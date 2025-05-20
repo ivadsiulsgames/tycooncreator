@@ -18,6 +18,7 @@ function BinderService:Init(serviceBag: ServiceBag.ServiceBag)
 	self._serviceBag:GetService(require("Conveyor"))
 	self._serviceBag:GetService(require("Dropper"))
 	self._serviceBag:GetService(require("SellPart"))
+	self._serviceBag:GetService(require("CashPart"))
 end
 
 return BinderService

@@ -12,12 +12,12 @@ local Signal = require("Signal")
 local InputSettings = require("InputSettings")
 
 type ControlSignals = {
-	BuildActivatedSignal: Signal.Signal<any>,
+	BuildOrDeleteActivatedSignal: Signal.Signal<any>,
 	RotateBuildActivatedSignal: Signal.Signal<any>,
-	DeleteBlockActivatedSignal: Signal.Signal<any>,
+	DeleteModeActivatedSignal: Signal.Signal<any>,
 }
 
-type ControlSignalName = "Build" | "RotateBuild" | "DeleteBlock"
+type ControlSignalName = "BuildOrDelete" | "RotateBuild" | "DeleteMode"
 
 type ControlSignalCallback = (inputState: Enum.UserInputState, inputObj: InputObject) -> ()
 
@@ -33,9 +33,9 @@ function InputServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 	-- Internal
 
 	self.ControlSignals = {
-		BuildActivatedSignal = Signal.new(),
+		BuildOrDeleteActivatedSignal = Signal.new(),
 		RotateBuildActivatedSignal = Signal.new(),
-		DeleteBlockActivatedSignal = Signal.new(),
+		DeleteModeActivatedSignal = Signal.new(),
 	} :: ControlSignals
 
 	self.isBound = false
@@ -62,9 +62,15 @@ function InputServiceClient:BindControls()
 	end
 	self.isBound = true
 
-	ContextActionService:BindAction("Build", function(...)
-		self:_handleAction(...)
-	end, InputSettings.BUILD_INPUT.MOBILE, InputSettings.BUILD_INPUT.PC, InputSettings.BUILD_INPUT.CONSOLE)
+	ContextActionService:BindAction(
+		"BuildOrDelete",
+		function(...)
+			self:_handleAction(...)
+		end,
+		InputSettings.BUILD_OR_DELETE_INPUT.MOBILE,
+		InputSettings.BUILD_OR_DELETE_INPUT.PC,
+		InputSettings.BUILD_OR_DELETE_INPUT.CONSOLE
+	)
 
 	ContextActionService:BindAction(
 		"RotateBuild",
@@ -77,13 +83,13 @@ function InputServiceClient:BindControls()
 	)
 
 	ContextActionService:BindAction(
-		"DeleteBlock",
+		"DeleteMode",
 		function(...)
 			self:_handleAction(...)
 		end,
-		InputSettings.DELETE_BLOCK_INPUT.MOBILE,
-		InputSettings.DELETE_BLOCK_INPUT.PC,
-		InputSettings.DELETE_BLOCK_INPUT.CONSOLE
+		InputSettings.DELETE_MODE_INPUT.MOBILE,
+		InputSettings.DELETE_MODE_INPUT.PC,
+		InputSettings.DELETE_MODE_INPUT.CONSOLE
 	)
 end
 
