@@ -21,6 +21,7 @@ function CommandsService:Init(serviceBag: ServiceBag.ServiceBag)
 	self.CmdrService = self._serviceBag:GetService(require("CmdrService"))
 
 	-- Internal
+	self.CashService = self._serviceBag:GetService(require("CashService"))
 end
 
 function CommandsService:RegisterBanCommand()
@@ -183,6 +184,71 @@ function CommandsService:RegisterUnbanCommand()
 	end)
 end
 
+function CommandsService:RegisterCashCommands()
+	self.CmdrService:RegisterCommand({
+		Name = "giveCash",
+		Aliases = { "addCash", "add-cash", "give-cash" },
+		Description = "Adds cash to a player's data.",
+		Group = "Admin",
+		Args = {
+			{
+				Type = "player",
+				Name = "player",
+				Description = "The player to give the cash to.",
+			},
+			{
+				Type = "number",
+				Name = "amount",
+				Description = "The amount of cash.",
+			},
+		},
+	}, function(_, player, amount)
+		self.CashService:AddCash(player, amount)
+	end)
+
+	self.CmdrService:RegisterCommand({
+		Name = "takeCash",
+		Aliases = { "removeCash", "remove-cash", "take-cash" },
+		Description = "Removes cash to a player's data.",
+		Group = "Admin",
+		Args = {
+			{
+				Type = "player",
+				Name = "player",
+				Description = "The player to remove the cash from.",
+			},
+			{
+				Type = "number",
+				Name = "amount",
+				Description = "The amount of cash.",
+			},
+		},
+	}, function(_, player, amount)
+		self.CashService:RemoveCash(player, amount)
+	end)
+
+	self.CmdrService:RegisterCommand({
+		Name = "setCash",
+		Aliases = { "set-cash" },
+		Description = "sets the cash in a player's data.",
+		Group = "Admin",
+		Args = {
+			{
+				Type = "player",
+				Name = "player",
+				Description = "The player to remove the cash from.",
+			},
+			{
+				Type = "number",
+				Name = "amount",
+				Description = "The amount of cash.",
+			},
+		},
+	}, function(_, player, amount)
+		self.CashService:SetCash(player, amount)
+	end)
+end
+
 function CommandsService:Start()
 	self:RegisterBanCommand()
 
@@ -194,6 +260,8 @@ function CommandsService:Start()
 	self:RegisterKickCommand()
 
 	self:RegisterUnbanCommand()
+
+	self:RegisterCashCommands()
 end
 
 return CommandsService
