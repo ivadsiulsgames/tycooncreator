@@ -69,7 +69,9 @@ function BuildServiceClient:GetPlacementStoppedSignal()
 end
 
 function BuildServiceClient:StartPlacementMode(blockName: string)
-	if self.inPlacement == true or self.inDeleting == true then
+	if self.inDeleting == true then
+		self:StopDeleteMode()
+	elseif self.inPlacement then
 		return
 	end
 	self.inPlacement = true
@@ -217,7 +219,8 @@ function BuildServiceClient:StartDeleteMode()
 	end
 	self.inDeleting = true
 
-	local deletingHighlight = Instance.new("Highlight")
+	self.deletingHighlight = Instance.new("Highlight")
+	local deletingHighlight = self.deletingHighlight
 	deletingHighlight.FillTransparency = 1
 	deletingHighlight.OutlineColor = Color3.fromRGB(255, 0, 0)
 
@@ -263,6 +266,15 @@ function BuildServiceClient:StartDeleteMode()
 
 		self.deleteConn:Disconnect()
 	end)
+end
+
+function BuildServiceClient:StopDeleteMode()
+	RunService:UnbindFromRenderStep("Deleting")
+	self.deletingHighlight:Destroy()
+
+	self.inDeleting = false
+
+	self.deleteConn:Disconnect()
 end
 
 function BuildServiceClient:DeleteBlock(block: Model)

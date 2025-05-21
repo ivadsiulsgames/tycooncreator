@@ -57,7 +57,7 @@ function ConveyorBlock:Init()
 		},
 
 		[Blend.OnEvent "Activated"] = function()
-			if self.BuildServiceClient:IsPlacing() or self.BuildServiceClient:IsDeleting() then
+			if self.BuildServiceClient:IsPlacing() then
 				return
 			end
 
