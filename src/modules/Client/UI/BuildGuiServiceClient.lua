@@ -83,6 +83,7 @@ function BuildGuiServiceClient:Start()
 		require("DropperBlock").new(buildFrame, self._serviceBag, self.viewportCamera)
 		require("ConveyorBlock").new(buildFrame, self._serviceBag, self.viewportCamera)
 		require("SellPartBlock").new(buildFrame, self._serviceBag, self.viewportCamera)
+		require("FenceBlock").new(buildFrame, self._serviceBag, self.viewportCamera)
 	end))
 end
 
