@@ -49,7 +49,7 @@ function BuildGuiServiceClient:Start()
 
 			Blend.New "UIListLayout" {
 				VerticalAlignment = Enum.VerticalAlignment.Center,
-				HorizontalAlignment = Enum.HorizontalAlignment.Left,
+				HorizontalAlignment = Enum.HorizontalAlignment.Center,
 				FillDirection = Enum.FillDirection.Horizontal,
 				Padding = UDim.new(0.02, 0),
 			},
