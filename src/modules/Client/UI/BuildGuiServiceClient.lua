@@ -7,10 +7,11 @@ local Players = game:GetService("Players")
 local require = require(script.Parent.loader).load(script)
 
 local Blend = require("Blend")
-local ServiceBag = require("ServiceBag")
---local Rx = require("Rx")
 local Maid = require("Maid")
 local RxAttributeUtils = require("RxAttributeUtils")
+local ServiceBag = require("ServiceBag")
+
+local InputSettings = require("InputSettings")
 
 local BuildGuiServiceClient = {}
 BuildGuiServiceClient.ServiceName = "BuildGuiServiceClient"
@@ -23,6 +24,9 @@ function BuildGuiServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 	-- External
 
 	-- Internal
+	self.InputServiceClient = self._serviceBag:GetService(require("InputServiceClient"))
+
+	self.blockModules = {}
 end
 
 function BuildGuiServiceClient:Start()
@@ -78,12 +82,45 @@ function BuildGuiServiceClient:Start()
 	end)
 
 	self._maid:GiveTask(render:Subscribe(function(buildScreen)
-		local buildFrame = buildScreen.BuildFrame
+		local buildFrame = buildScreen.BuildFrame :: Frame
 
-		require("DropperBlock").new(buildFrame, self._serviceBag, self.viewportCamera)
-		require("ConveyorBlock").new(buildFrame, self._serviceBag, self.viewportCamera)
-		require("SellPartBlock").new(buildFrame, self._serviceBag, self.viewportCamera)
-		require("FenceBlock").new(buildFrame, self._serviceBag, self.viewportCamera)
+		self.blockModules.DropperBlock = require("DropperBlock").new(buildFrame, self._serviceBag, self.viewportCamera)
+		self.blockModules.ConveyorBlock =
+			require("ConveyorBlock").new(buildFrame, self._serviceBag, self.viewportCamera)
+		self.blockModules.SellPartBlock =
+			require("SellPartBlock").new(buildFrame, self._serviceBag, self.viewportCamera)
+		self.blockModules.FenceBlock = require("FenceBlock").new(buildFrame, self._serviceBag, self.viewportCamera)
+
+		local function setInputIcons()
+			local index = 0
+			for _, button in buildFrame:GetChildren() do
+				if button:IsA("ImageButton") and index <= 5 then
+					index += 1
+
+					local inputIcon = button:FindFirstChild("InputIcon")
+
+					local inputName = `BLOCK_{tostring(index)}_INPUT`
+
+					local module = self.blockModules[string.split(button.Name, "Button")[1]]
+
+					self.InputServiceClient:BindToSignal(`Block{index}`, function()
+						module:_onActivated()
+					end)
+
+					if InputSettings[inputName] then
+						self.InputServiceClient:StyleImageToInputIcon(inputIcon, inputName)
+					end
+				end
+			end
+		end
+
+		setInputIcons()
+
+		self._maid:GiveTask(buildFrame.ChildAdded:Connect(function(child: Instance)
+			if child:IsA("ImageButton") then
+				setInputIcons()
+			end
+		end))
 	end))
 end
 

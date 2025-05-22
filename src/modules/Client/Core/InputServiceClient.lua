@@ -6,6 +6,7 @@ local ContextActionService = game:GetService("ContextActionService")
 
 local require = require(script.Parent.loader).load(script)
 
+local InputImageLibrary = require("InputImageLibrary")
 local Maid = require("Maid")
 local ServiceBag = require("ServiceBag")
 local Signal = require("Signal")
@@ -17,9 +18,22 @@ type ControlSignals = {
 	BuildOrDeleteActivatedSignal: Signal.Signal<any>,
 	RotateBuildActivatedSignal: Signal.Signal<any>,
 	DeleteModeActivatedSignal: Signal.Signal<any>,
+	Block1ActivatedSignal: Signal.Signal<any>,
+	Block2ActivatedSignal: Signal.Signal<any>,
+	Block3ActivatedSignal: Signal.Signal<any>,
+	Block4ActivatedSignal: Signal.Signal<any>,
+	Block5ActivatedSignal: Signal.Signal<any>,
 }
 
-type ControlSignalName = "BuildOrDelete" | "RotateBuild" | "DeleteMode"
+type ControlSignalName =
+	"BuildOrDelete"
+	| "RotateBuild"
+	| "DeleteMode"
+	| "Block1"
+	| "Block2"
+	| "Block3"
+	| "Block4"
+	| "Block5"
 
 type ControlSignalCallback = (inputState: Enum.UserInputState, inputObj: InputObject) -> ()
 
@@ -39,6 +53,11 @@ function InputServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 		BuildOrDeleteActivatedSignal = Signal.new(),
 		RotateBuildActivatedSignal = Signal.new(),
 		DeleteModeActivatedSignal = Signal.new(),
+		Block1ActivatedSignal = Signal.new(),
+		Block2ActivatedSignal = Signal.new(),
+		Block3ActivatedSignal = Signal.new(),
+		Block4ActivatedSignal = Signal.new(),
+		Block5ActivatedSignal = Signal.new(),
 	} :: ControlSignals
 
 	self.isBound = false
@@ -47,6 +66,11 @@ function InputServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 		BUILD_OR_DELETE = "BuildOrDelete",
 		ROTATE_BUILD = "RotateBuild",
 		DELETE_MODE = "DeleteMode",
+		BLOCK_1 = "Block1",
+		BLOCK_2 = "Block2",
+		BLOCK_3 = "Block3",
+		BLOCK_4 = "Block4",
+		BLOCK_5 = "Block5",
 	}
 end
 
@@ -70,6 +94,8 @@ function InputServiceClient:BindControls()
 		return
 	end
 	self.isBound = true
+
+	--// BUILDING AND DELETION
 
 	ContextActionService:BindAction(
 		self.actionNames.BUILD_OR_DELETE,
@@ -101,9 +127,31 @@ function InputServiceClient:BindControls()
 		InputSettings.DELETE_MODE_INPUT.CONSOLE
 	)
 
-	self._maid:GiveTask(InputSettings.Changed:Connect(function(_, inputName: InputSettings.InputName, _)
-		print(inputName)
+	--// BLOCK NUMBER HOTKEYS
 
+	ContextActionService:BindAction(self.actionNames.BLOCK_1, function(...)
+		self:_handleAction(...)
+	end, InputSettings.BLOCK_1_INPUT.MOBILE, InputSettings.BLOCK_1_INPUT.PC, InputSettings.BLOCK_1_INPUT.CONSOLE)
+
+	ContextActionService:BindAction(self.actionNames.BLOCK_2, function(...)
+		self:_handleAction(...)
+	end, InputSettings.BLOCK_2_INPUT.MOBILE, InputSettings.BLOCK_2_INPUT.PC, InputSettings.BLOCK_2_INPUT.CONSOLE)
+
+	ContextActionService:BindAction(self.actionNames.BLOCK_3, function(...)
+		self:_handleAction(...)
+	end, InputSettings.BLOCK_3_INPUT.MOBILE, InputSettings.BLOCK_3_INPUT.PC, InputSettings.BLOCK_3_INPUT.CONSOLE)
+
+	ContextActionService:BindAction(self.actionNames.BLOCK_4, function(...)
+		self:_handleAction(...)
+	end, InputSettings.BLOCK_4_INPUT.MOBILE, InputSettings.BLOCK_4_INPUT.PC, InputSettings.BLOCK_4_INPUT.CONSOLE)
+
+	ContextActionService:BindAction(self.actionNames.BLOCK_5, function(...)
+		self:_handleAction(...)
+	end, InputSettings.BLOCK_5_INPUT.MOBILE, InputSettings.BLOCK_5_INPUT.PC, InputSettings.BLOCK_5_INPUT.CONSOLE)
+
+	--// HANDLE CHANGES
+
+	self._maid:GiveTask(InputSettings.Changed:Connect(function(_, inputName: InputSettings.InputName, _)
 		local tableName = string.split(inputName, "_INPUT")[1]
 
 		ContextActionService:UnbindAction(self.actionNames[tableName])
@@ -120,7 +168,9 @@ function InputServiceClient:UnbindControls()
 	end
 	self.isBound = true
 
-	ContextActionService:UnbindAction("Build")
+	for _, v in self.actionNames do
+		ContextActionService:UnbindAction(v)
+	end
 end
 
 function InputServiceClient:BindToSignal(
@@ -135,6 +185,34 @@ function InputServiceClient:BindToSignal(
 	else
 		error(`Couldn't find signal: {signalName} ({trueName})`)
 	end
+end
+
+function InputServiceClient:StyleImageToInputIcon(image: ImageButton | ImageLabel, inputName: InputSettings.InputName)
+	local input = InputSettings[inputName].PC
+
+	if Platform:GetLocalPlatform() == "CONSOLE" then
+		input = InputSettings[inputName].CONSOLE
+	elseif Platform:GetLocalPlatform() == "MOBILE" then
+		input = nil
+	end
+
+	self._maid:GiveTask(
+		InputSettings.Changed:Connect(
+			function(
+				newInput: InputSettings.Input,
+				name: InputSettings.InputName,
+				inputPlatform: InputSettings.InputPlatform
+			)
+				if Platform:GetLocalPlatform() ~= inputPlatform or name ~= inputName then
+					return
+				end
+
+				InputImageLibrary:StyleImage(image, newInput, "Dark")
+			end
+		)
+	)
+
+	return InputImageLibrary:StyleImage(image, input, "Dark")
 end
 
 return InputServiceClient

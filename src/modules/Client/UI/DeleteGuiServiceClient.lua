@@ -3,18 +3,13 @@
 ]=]
 
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
 
 local require = require(script.Parent.loader).load(script)
 
 local Blend = require("Blend")
-local InputImageLibrary = require("InputImageLibrary")
 local Maid = require("Maid")
 local RxAttributeUtils = require("RxAttributeUtils")
 local ServiceBag = require("ServiceBag")
-
-local InputSettings = require("InputSettings")
-local Platform = require("Platform")
 
 local DeleteGuiServiceClient = {}
 DeleteGuiServiceClient.ServiceName = "DeleteGuiServiceClient"
@@ -28,6 +23,7 @@ function DeleteGuiServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 
 	-- Internal
 	self.BuildServiceClient = self._serviceBag:GetService(require("BuildServiceClient"))
+	self.InputServiceClient = self._serviceBag:GetService(require("InputServiceClient"))
 end
 
 function DeleteGuiServiceClient:Start()
@@ -96,35 +92,7 @@ function DeleteGuiServiceClient:Start()
 		local deleteFrame = deleteScreen:FindFirstChild("DeleteFrame")
 		local inputImageLabel = deleteFrame:FindFirstChild("DeleteModeInputIcon")
 
-		local input = InputSettings.DELETE_MODE_INPUT.PC
-
-		if Platform:GetLocalPlatform() == "CONSOLE" then
-			input = InputSettings.DELETE_MODE_INPUT.CONSOLE
-		elseif Platform:GetLocalPlatform() == "MOBILE" then
-			input = nil
-		end
-
-		self._maid:GiveTask(
-			InputSettings.Changed:Connect(
-				function(
-					newInput: InputSettings.Input,
-					inputName: InputSettings.InputName,
-					inputPlatform: InputSettings.InputPlatform
-				)
-					if Platform:GetLocalPlatform() ~= inputPlatform or inputName ~= "DELETE_MODE_INPUT" then
-						return
-					end
-
-					InputImageLibrary:StyleImage(inputImageLabel, newInput, "Dark")
-				end
-			)
-		)
-
-		InputImageLibrary:StyleImage(inputImageLabel, input, "Dark")
-
-		task.delay(10, function()
-			InputSettings:ChangeInput("DELETE_MODE_INPUT", "PC", Enum.KeyCode.F)
-		end)
+		self.InputServiceClient:StyleImageToInputIcon(inputImageLabel, "DELETE_MODE_INPUT")
 	end))
 end
 

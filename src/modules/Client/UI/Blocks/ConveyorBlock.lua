@@ -31,11 +31,15 @@ function ConveyorBlock.new(buildFrame, _serviceBag: ServiceBag.ServiceBag, viewp
 	return self
 end
 
+function ConveyorBlock:_onActivated()
+	if self.BuildServiceClient:StartPlacementMode("Conveyor") == true then
+		self.closeButton.Visible = true
+	end
+end
+
 function ConveyorBlock:Init()
 	local render = Blend.New "ImageButton" {
 		Name = "ConveyorBlockButton",
-
-		--Image = "rbxassetid://11752199121",
 
 		BackgroundTransparency = 1,
 
@@ -56,18 +60,22 @@ function ConveyorBlock:Init()
 			CurrentCamera = self.viewportCamera,
 		},
 
+		Blend.New "ImageLabel" {
+			AnchorPoint = Vector2.new(0.5, 0.5),
+
+			Position = UDim2.fromScale(0.95, 0.05),
+
+			Size = UDim2.fromScale(0.4, 0.4),
+
+			BackgroundTransparency = 1,
+
+			Name = "InputIcon",
+
+			Blend.New "UIAspectRatioConstraint" {},
+		},
+
 		[Blend.OnEvent "Activated"] = function()
-			if self.BuildServiceClient:IsPlacing() then
-				return
-			end
-
-			self.BuildServiceClient:StartPlacementMode("Conveyor")
-
-			self.closeButton.Visible = true
-
-			self._maid:GiveTask(self.BuildServiceClient:GetPlacementStoppedSignal():Connect(function()
-				self.closeButton.Visible = false
-			end))
+			self:_onActivated()
 		end,
 	}
 
@@ -128,6 +136,10 @@ function ConveyorBlock:Init()
 
 	closeButton:Subscribe(function(button)
 		self.closeButton = button
+
+		self._maid:GiveTask(self.BuildServiceClient:GetPlacementStoppedSignal():Connect(function()
+			self.closeButton.Visible = false
+		end))
 	end)
 end
 

@@ -31,6 +31,12 @@ function FenceBlock.new(buildFrame, _serviceBag: ServiceBag.ServiceBag, viewport
 	return self
 end
 
+function FenceBlock:_onActivated()
+	if self.BuildServiceClient:StartPlacementMode("Fence") then
+		self.closeButton.Visible = true
+	end
+end
+
 function FenceBlock:Init()
 	local render = Blend.New "ImageButton" {
 		Name = "FenceBlockButton",
@@ -54,18 +60,22 @@ function FenceBlock:Init()
 			CurrentCamera = self.viewportCamera,
 		},
 
+		Blend.New "ImageLabel" {
+			AnchorPoint = Vector2.new(0.5, 0.5),
+
+			Position = UDim2.fromScale(0.95, 0.05),
+
+			Size = UDim2.fromScale(0.4, 0.4),
+
+			BackgroundTransparency = 1,
+
+			Name = "InputIcon",
+
+			Blend.New "UIAspectRatioConstraint" {},
+		},
+
 		[Blend.OnEvent "Activated"] = function()
-			if self.BuildServiceClient:IsPlacing() then
-				return
-			end
-
-			self.BuildServiceClient:StartPlacementMode("Fence")
-
-			self.closeButton.Visible = true
-
-			self._maid:GiveTask(self.BuildServiceClient:GetPlacementStoppedSignal():Connect(function()
-				self.closeButton.Visible = false
-			end))
+			self:_onActivated()
 		end,
 	}
 
@@ -126,6 +136,10 @@ function FenceBlock:Init()
 
 	closeButton:Subscribe(function(button)
 		self.closeButton = button
+
+		self._maid:GiveTask(self.BuildServiceClient:GetPlacementStoppedSignal():Connect(function()
+			self.closeButton.Visible = false
+		end))
 	end)
 end
 

@@ -5,6 +5,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local SoundService = game:GetService("SoundService")
 
 local require = require(script.Parent.loader).load(script)
 
@@ -72,8 +73,14 @@ function BuildServiceClient:StartPlacementMode(blockName: string)
 	if self.inDeleting == true then
 		self:StopDeleteMode()
 	elseif self.inPlacement then
-		return
+		if self.placingBlockName == blockName then
+			self:StopPlacementMode()
+			return self.inPlacement
+		end
+
+		self:StopPlacementMode()
 	end
+
 	self.inPlacement = true
 
 	local block = ReplicatedStorage.Assets.Blocks[blockName]
@@ -178,6 +185,11 @@ function BuildServiceClient:StartPlacementMode(blockName: string)
 
 		if canPlace == false then
 			SoundUtils.playFromId(Sounds.PlacementError)
+		else
+			local placeSound = SoundUtils.createSoundFromId(Sounds.PlaceBlock)
+			placeSound.Volume = require("SoundSettings").VOLUME.SOUNDS
+
+			SoundService:PlayLocalSound(placeSound)
 		end
 
 		self.PlacementStopped:Fire()
@@ -185,6 +197,8 @@ function BuildServiceClient:StartPlacementMode(blockName: string)
 		self.rotateConn:Disconnect()
 		self.buildConn:Disconnect()
 	end)
+
+	return self.inPlacement
 end
 
 function BuildServiceClient:StopPlacementMode()
@@ -215,7 +229,7 @@ function BuildServiceClient:StartDeleteMode()
 	if self.inPlacement == true then
 		self:StopPlacementMode()
 	elseif self.inDeleting then
-		return
+		return self.inDeleting
 	end
 	self.inDeleting = true
 
@@ -266,6 +280,8 @@ function BuildServiceClient:StartDeleteMode()
 
 		self.deleteConn:Disconnect()
 	end)
+
+	return self.inDeleting
 end
 
 function BuildServiceClient:StopDeleteMode()

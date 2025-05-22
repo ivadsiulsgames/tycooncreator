@@ -4,11 +4,17 @@
 
 local MessagingService = game:GetService("MessagingService")
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local TeleportService = game:GetService("TeleportService")
 
 local require = require(script.Parent.loader).load(script)
 
+local InputNames = require("InputNames")
+local InputPlatforms = require("InputPlatforms")
 local ServiceBag = require("ServiceBag")
+
+local Remotes = ReplicatedStorage.Remotes
 
 local CommandsService = {}
 CommandsService.ServiceName = "CommandsService"
@@ -249,6 +255,45 @@ function CommandsService:RegisterCashCommands()
 	end)
 end
 
+function CommandsService:RegisterDebugCommands()
+	local DebugRemote = Remotes.DebugCommands
+
+	self.CmdrService:RegisterCommand(
+		{
+			Name = "debug-changeKeybind",
+			Aliases = {},
+			Description = "Changes a keybind for a specific action.",
+			Group = "Admin",
+			Args = {
+				{
+					Type = "string",
+					Name = "Name",
+					Description = "The name of the keybind to change.",
+				},
+				{
+					Type = "string",
+					Name = "Platform",
+					Description = "The platform of the keybind. (ex. PC, CONSOLE)",
+				},
+				{
+					Type = "userInput",
+					Name = "newInput",
+					Description = "The new input of the keybind.",
+				},
+			},
+		},
+		function(
+			context,
+			inputName: InputNames.InputName,
+			inputPlatform: InputPlatforms.InputPlatform,
+			newInput: Enum.UserInputType | Enum.KeyCode
+		)
+			print(context.Executor)
+			DebugRemote:FireClient(context.Executor, inputName, inputPlatform, newInput)
+		end
+	)
+end
+
 function CommandsService:Start()
 	self:RegisterBanCommand()
 
@@ -262,6 +307,10 @@ function CommandsService:Start()
 	self:RegisterUnbanCommand()
 
 	self:RegisterCashCommands()
+
+	if RunService:IsStudio() then
+		self:RegisterDebugCommands()
+	end
 end
 
 return CommandsService

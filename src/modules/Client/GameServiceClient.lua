@@ -14,13 +14,13 @@ function GameServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 	self._serviceBag = assert(serviceBag, "No serviceBag")
 
 	-- External
-	self._serviceBag:GetService(require("CmdrServiceClient"))
 
 	-- Internal
 	serviceBag:GetService(require("GuiServiceClient"))
 	serviceBag:GetService(require("BinderServiceClient"))
 	serviceBag:GetService(require("BuildServiceClient"))
 	serviceBag:GetService(require("InputServiceClient"))
+	serviceBag:GetService(require("CommandsServiceClient"))
 end
 
 return GameServiceClient
