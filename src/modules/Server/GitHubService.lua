@@ -42,7 +42,9 @@ function GitHubService:Init(serviceBag: ServiceBag.ServiceBag)
 					ReleaseVersion = data.tag_name,
 				}
 			else
-				warn("Failed to fetch latest release: " .. (response and response.StatusMessage or "Unknown error"))
+				warn(
+					`[GitHub]: Failed to fetch latest release:{response and response.StatusMessage or "Unknown error"}`
+				)
 				return nil
 			end
 		end
