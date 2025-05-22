@@ -3,14 +3,18 @@
 ]=]
 
 local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
 
 local require = require(script.Parent.loader).load(script)
 
 local Blend = require("Blend")
-local ServiceBag = require("ServiceBag")
---local Rx = require("Rx")
+local InputImageLibrary = require("InputImageLibrary")
 local Maid = require("Maid")
 local RxAttributeUtils = require("RxAttributeUtils")
+local ServiceBag = require("ServiceBag")
+
+local InputSettings = require("InputSettings")
+local Platform = require("Platform")
 
 local DeleteGuiServiceClient = {}
 DeleteGuiServiceClient.ServiceName = "DeleteGuiServiceClient"
@@ -71,10 +75,57 @@ function DeleteGuiServiceClient:Start()
 					end
 				end,
 			},
+
+			Blend.New "ImageLabel" {
+				AnchorPoint = Vector2.new(0.5, 0.5),
+
+				Position = UDim2.fromScale(0.95, 0.05),
+
+				Size = UDim2.fromScale(0.35, 0.35),
+
+				BackgroundTransparency = 1,
+
+				Name = "DeleteModeInputIcon",
+
+				Blend.New "UIAspectRatioConstraint" {},
+			},
 		},
 	}
 
-	self._maid:GiveTask(render:Subscribe())
+	self._maid:GiveTask(render:Subscribe(function(deleteScreen)
+		local deleteFrame = deleteScreen:FindFirstChild("DeleteFrame")
+		local inputImageLabel = deleteFrame:FindFirstChild("DeleteModeInputIcon")
+
+		local input = InputSettings.DELETE_MODE_INPUT.PC
+
+		if Platform:GetLocalPlatform() == "CONSOLE" then
+			input = InputSettings.DELETE_MODE_INPUT.CONSOLE
+		elseif Platform:GetLocalPlatform() == "MOBILE" then
+			input = nil
+		end
+
+		self._maid:GiveTask(
+			InputSettings.Changed:Connect(
+				function(
+					newInput: InputSettings.Input,
+					inputName: InputSettings.InputName,
+					inputPlatform: InputSettings.InputPlatform
+				)
+					if Platform:GetLocalPlatform() ~= inputPlatform or inputName ~= "DELETE_MODE_INPUT" then
+						return
+					end
+
+					InputImageLibrary:StyleImage(inputImageLabel, newInput, "Dark")
+				end
+			)
+		)
+
+		InputImageLibrary:StyleImage(inputImageLabel, input, "Dark")
+
+		task.delay(10, function()
+			InputSettings:ChangeInput("DELETE_MODE_INPUT", "PC", Enum.KeyCode.F)
+		end)
+	end))
 end
 
 return DeleteGuiServiceClient

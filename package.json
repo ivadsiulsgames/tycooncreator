@@ -19,7 +19,8 @@
     "@quenty/datastore": "^13.22.0",
     "@quenty/loader": "^10.9.0",
     "@quenty/servicebag": "^11.12.0",
-    "@quenty/sounds": "^10.11.0"
+    "@quenty/sounds": "^10.11.0",
+    "@quenty/sprites": "^13.17.0"
   },
   "publishConfig": {
     "access": "restricted"

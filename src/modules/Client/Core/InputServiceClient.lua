@@ -6,10 +6,12 @@ local ContextActionService = game:GetService("ContextActionService")
 
 local require = require(script.Parent.loader).load(script)
 
+local Maid = require("Maid")
 local ServiceBag = require("ServiceBag")
 local Signal = require("Signal")
 
 local InputSettings = require("InputSettings")
+local Platform = require("Platform")
 
 type ControlSignals = {
 	BuildOrDeleteActivatedSignal: Signal.Signal<any>,
@@ -27,6 +29,7 @@ InputServiceClient.ServiceName = "InputServiceClient"
 function InputServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 	assert(not self._serviceBag, "Already initialized")
 	self._serviceBag = assert(serviceBag, "No serviceBag")
+	self._maid = Maid.new()
 
 	-- External
 
@@ -39,6 +42,12 @@ function InputServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 	} :: ControlSignals
 
 	self.isBound = false
+
+	self.actionNames = {
+		BUILD_OR_DELETE = "BuildOrDelete",
+		ROTATE_BUILD = "RotateBuild",
+		DELETE_MODE = "DeleteMode",
+	}
 end
 
 function InputServiceClient:Start()
@@ -63,7 +72,7 @@ function InputServiceClient:BindControls()
 	self.isBound = true
 
 	ContextActionService:BindAction(
-		"BuildOrDelete",
+		self.actionNames.BUILD_OR_DELETE,
 		function(...)
 			self:_handleAction(...)
 		end,
@@ -73,7 +82,7 @@ function InputServiceClient:BindControls()
 	)
 
 	ContextActionService:BindAction(
-		"RotateBuild",
+		self.actionNames.ROTATE_BUILD,
 		function(...)
 			self:_handleAction(...)
 		end,
@@ -83,7 +92,7 @@ function InputServiceClient:BindControls()
 	)
 
 	ContextActionService:BindAction(
-		"DeleteMode",
+		self.actionNames.DELETE_MODE,
 		function(...)
 			self:_handleAction(...)
 		end,
@@ -91,6 +100,18 @@ function InputServiceClient:BindControls()
 		InputSettings.DELETE_MODE_INPUT.PC,
 		InputSettings.DELETE_MODE_INPUT.CONSOLE
 	)
+
+	self._maid:GiveTask(InputSettings.Changed:Connect(function(_, inputName: InputSettings.InputName, _)
+		print(inputName)
+
+		local tableName = string.split(inputName, "_INPUT")[1]
+
+		ContextActionService:UnbindAction(self.actionNames[tableName])
+
+		ContextActionService:BindAction(self.actionNames[tableName], function(...)
+			self:_handleAction(...)
+		end, InputSettings[inputName].MOBILE, InputSettings[inputName].PC, InputSettings[inputName].CONSOLE)
+	end))
 end
 
 function InputServiceClient:UnbindControls()
