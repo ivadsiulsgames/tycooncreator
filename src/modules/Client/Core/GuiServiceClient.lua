@@ -21,6 +21,7 @@ function GuiServiceClient:Init(serviceBag: ServiceBag.ServiceBag)
 	self._serviceBag:GetService(require("BuildGuiServiceClient"))
 	self._serviceBag:GetService(require("CashGuiServiceClient"))
 	self._serviceBag:GetService(require("DeleteGuiServiceClient"))
+	self._serviceBag:GetService(require("VersionGuiServiceClient"))
 end
 
 return GuiServiceClient

@@ -17,10 +17,14 @@ function GameService:Init(serviceBag: ServiceBag.ServiceBag)
 
 	-- Internal
 	serviceBag:GetService(require("BinderService"))
+
 	serviceBag:GetService(require("BuildService"))
+
 	serviceBag:GetService(require("DataService"))
 	serviceBag:GetService(require("CashService"))
+
 	serviceBag:GetService(require("CommandsService"))
+	serviceBag:GetService(require("GitHubService"))
 end
 
 return GameService

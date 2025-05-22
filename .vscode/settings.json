@@ -13,7 +13,8 @@
         "rojo",
         "rtime",
         "servicebag",
-        "stylua"
+        "stylua",
+        "tycooncreator"
     ],
     "editor.formatOnSave": true
 }
