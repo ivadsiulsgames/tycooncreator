@@ -16,6 +16,7 @@ This game uses the following tools
 - [Selene](https://kampfkarren.github.io/selene/roblox.html) - Linter
 - [npm](https://nodejs.org/en/download/) - Package manager
 - [Nevermore](https://github.com/Quenty/NevermoreEngine) - Packages
+- [Luau LSP](https://open-vsx.org/extension/JohnnyMorganz/luau-lsp) - Language Server [Quenty Fork](https://github.com/Quenty/luau-lsp)
 
 ## Building Tycoon Creator
 
