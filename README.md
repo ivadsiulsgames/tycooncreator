@@ -1,15 +1,21 @@
-> [!WARNING]
-> This is a private repository. Sharing or showing the code inside this repository is strictly forbidden and will result in being removed from the team and possible legal action.
-
 <p style="text-align:center;">
+
 # Tycoon Creator
+
 [![wakatime](https://wakatime.com/badge/github/ivadsiulsgames/tycooncreator.svg)](https://wakatime.com/badge/github/ivadsiulsgames/tycooncreator)
+
 [![forthebadge](https://forthebadge.com/images/badges/contains-tasty-spaghetti-code.svg)](https://forthebadge.com)
+
 [![forthebadge](https://forthebadge.com/images/badges/0-percent-optimized.svg)](https://forthebadge.com)
+
 [![forthebadge](https://forthebadge.com/images/badges/60-percent-of-the-time-works-every-time.svg)](https://forthebadge.com)
+
 [![forthebadge](https://forthebadge.com/images/badges/designed-in-ms-paint.svg)](https://forthebadge.com)
+
 [![forthebadge](https://forthebadge.com/images/badges/works-on-my-machine.svg)](https://forthebadge.com)
+
 [![forthebadge](https://forthebadge.com/images/badges/no-ragrets.svg)](https://forthebadge.com)
+
 </p>
 
 Source code for Tycoon Creator. This game was made using the Nevermore Engine libraries.
@@ -43,3 +49,6 @@ To add new packages you can run `npm install @quenty/package-name` or whatever t
 > [!NOTE]
 > This software is protected by copyright law.
 > You may not copy, modify, distribute, or use this project in any way without express permission from the creator.
+
+> [!WARNING]
+> This is a private repository. Sharing or showing the code inside this repository is strictly forbidden and will result in being removed from the team and possible legal action.
