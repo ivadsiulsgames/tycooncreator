@@ -65,6 +65,51 @@ function BuildGuiServiceClient:Start()
 				PaddingTop = UDim.new(0.1, 0),
 			},
 		},
+
+		Blend.New "Frame" {
+			Name = "SearchFrame",
+
+			AnchorPoint = Vector2.new(1, 1),
+
+			Position = UDim2.fromScale(0.75, 0.84),
+			Size = UDim2.fromScale(0.2, 0.07),
+
+			BackgroundTransparency = 0.5,
+			BackgroundColor3 = Blend.Spring(
+				RxAttributeUtils.observeAttribute(Players.LocalPlayer.PlayerGui, "PrimaryColor", Color3.new(0, 0, 0)),
+				3
+			),
+
+			Blend.New "ImageLabel" {
+				Name = "SearchIcon",
+
+				AnchorPoint = Vector2.new(0, 0.5),
+
+				Position = UDim2.fromScale(0.01, 0.5),
+				Size = UDim2.fromScale(0.9, 0.9),
+
+				BackgroundTransparency = 1,
+
+				Image = "rbxassetid://96060641709608",
+
+				Blend.New "UIAspectRatioConstraint" {},
+			},
+
+			Blend.New "TextBox" {
+				Name = "SearchBox",
+
+				AnchorPoint = Vector2.new(1, 0.5),
+
+				Position = UDim2.fromScale(1, 0.5),
+				Size = UDim2.fromScale(0.8, 1),
+
+				BackgroundTransparency = 1,
+
+				TextScaled = true,
+
+				TextColor3 = Color3.fromRGB(255, 255, 255),
+			},
+		},
 	}
 
 	local cam = Blend.New "Camera" {

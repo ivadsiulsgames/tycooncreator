@@ -13,7 +13,7 @@ export type Input = Enum.UserInputState | InputObject
 local InputSettings = {
 	BUILD_OR_DELETE_INPUT = {
 		PC = Enum.UserInputType.MouseButton1,
-		CONSOLE = Enum.KeyCode.ButtonX,
+		CONSOLE = Enum.KeyCode.ButtonB,
 		MOBILE = false,
 	},
 	ROTATE_BUILD_INPUT = {
@@ -23,27 +23,27 @@ local InputSettings = {
 	},
 	DELETE_MODE_INPUT = {
 		PC = Enum.KeyCode.C,
-		CONSOLE = Enum.KeyCode.ButtonB,
+		CONSOLE = Enum.KeyCode.ButtonX,
 		MOBILE = false,
 	},
 	BLOCK_1_INPUT = {
 		PC = Enum.KeyCode.One,
-		CONSOLE = Enum.KeyCode.One,
+		CONSOLE = Enum.KeyCode.DPadUp,
 		MOBILE = false,
 	},
 	BLOCK_2_INPUT = {
 		PC = Enum.KeyCode.Two,
-		CONSOLE = Enum.KeyCode.Two,
+		CONSOLE = Enum.KeyCode.DPadLeft,
 		MOBILE = false,
 	},
 	BLOCK_3_INPUT = {
 		PC = Enum.KeyCode.Three,
-		CONSOLE = Enum.KeyCode.Three,
+		CONSOLE = Enum.KeyCode.DPadDown,
 		MOBILE = false,
 	},
 	BLOCK_4_INPUT = {
 		PC = Enum.KeyCode.Four,
-		CONSOLE = Enum.KeyCode.Four,
+		CONSOLE = Enum.KeyCode.DPadRight,
 		MOBILE = false,
 	},
 	BLOCK_5_INPUT = {
