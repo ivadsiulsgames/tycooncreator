@@ -1,4 +1,4 @@
-<p style="text-align:center;">
+<div align="center">
 
 # Tycoon Creator
 
@@ -16,7 +16,7 @@
 
 [![forthebadge](https://forthebadge.com/images/badges/no-ragrets.svg)](https://forthebadge.com)
 
-</p>
+</div>
 
 Source code for Tycoon Creator. This game was made using the Nevermore Engine libraries.
 
