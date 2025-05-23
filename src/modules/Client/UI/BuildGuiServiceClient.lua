@@ -108,6 +108,12 @@ function BuildGuiServiceClient:Start()
 				TextScaled = true,
 
 				TextColor3 = Color3.fromRGB(255, 255, 255),
+
+				PlaceholderText = "Block name...",
+
+				PlaceholderColor3 = Color3.fromRGB(153, 153, 153),
+
+				TextXAlignment = Enum.TextXAlignment.Left,
 			},
 		},
 	}

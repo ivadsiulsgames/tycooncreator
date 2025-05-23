@@ -55,7 +55,7 @@ function GitHubService:Init(serviceBag: ServiceBag.ServiceBag)
 
 		local latestRelease = getLatestRelease(owner, repo, token)
 		if latestRelease then
-			ReplicatedStorage.VersionName.Value = latestRelease
+			ReplicatedStorage.VersionName.Value = latestRelease.ReleaseVersion
 		end
 	end)
 end
