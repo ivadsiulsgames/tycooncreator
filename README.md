@@ -8,7 +8,7 @@
 
 </div>
 
-Source code for Tycoon Creator. This game was made using the Nevermore Engine libraries.
+Source code for Tycoon Creator. This game was made using the Nevermore Engine packages.
 
 ## Tools
 
