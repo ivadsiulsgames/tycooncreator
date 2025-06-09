@@ -1,5 +1,7 @@
 --[=[
 	@class InputServiceClient
+
+	made this cool thing
 ]=]
 
 local ContextActionService = game:GetService("ContextActionService")
@@ -13,6 +15,7 @@ local Signal = require("Signal")
 
 local InputSettings = require("InputSettings")
 local Platform = require("Platform")
+local PlayerSettings = require("PlayerSettings")
 
 type ControlSignals = {
 	BuildOrDeleteActivatedSignal: Signal.Signal<any>,
@@ -187,15 +190,8 @@ function InputServiceClient:BindToSignal(
 	end
 end
 
+-- using InputImageLibrary
 function InputServiceClient:StyleImageToInputIcon(image: ImageButton | ImageLabel, inputName: InputSettings.InputName)
-	local input = InputSettings[inputName].PC
-
-	if Platform:GetLocalPlatform() == "CONSOLE" then
-		input = InputSettings[inputName].CONSOLE
-	elseif Platform:GetLocalPlatform() == "MOBILE" then
-		input = nil
-	end
-
 	self._maid:GiveTask(
 		InputSettings.Changed:Connect(
 			function(
@@ -207,12 +203,16 @@ function InputServiceClient:StyleImageToInputIcon(image: ImageButton | ImageLabe
 					return
 				end
 
-				InputImageLibrary:StyleImage(image, newInput, "Dark")
+				InputImageLibrary:StyleImage(image, newInput, PlayerSettings.Theme)
 			end
 		)
 	)
 
-	return InputImageLibrary:StyleImage(image, input, "Dark")
+	self._maid:GiveTask(Platform:ObserveLocalPlatform():Subscribe(function(newPlatform: InputSettings.InputPlatform)
+		local newInput = InputSettings[inputName][newPlatform]
+
+		InputImageLibrary:StyleImage(image, newInput, PlayerSettings.Theme)
+	end))
 end
 
 return InputServiceClient

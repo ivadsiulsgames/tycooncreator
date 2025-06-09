@@ -8,6 +8,7 @@ local require = require(loader).bootstrapGame(ServerScriptService.Game)
 
 local serviceBag = require("ServiceBag").new()
 
+-- This makes a chain and GameService requires all the other services needed.
 serviceBag:GetService(require("GameService"))
 
 serviceBag:Init()

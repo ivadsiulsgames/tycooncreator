@@ -20,6 +20,11 @@ function GitHubService:Init(serviceBag: ServiceBag.ServiceBag)
 
 	-- Internal
 
+	self:SetVersionValue()
+end
+
+-- TODO: fix this, it don't work :sob:
+function GitHubService:SetVersionValue()
 	task.spawn(function()
 		local function getLatestRelease(owner, repo, token)
 			local url = string.format("https://api.github.com/repos/%s/%s/releases/latest", owner, repo)

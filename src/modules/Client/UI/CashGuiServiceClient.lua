@@ -8,7 +8,7 @@ local require = require(script.Parent.loader).load(script)
 
 local Blend = require("Blend")
 local ServiceBag = require("ServiceBag")
---local Rx = require("Rx")
+
 local Maid = require("Maid")
 local RxAttributeUtils = require("RxAttributeUtils")
 
@@ -72,18 +72,20 @@ function CashGuiServiceClient:Start()
 		},
 	}
 
-	self._maid:GiveTask(render:Subscribe(function(CashScreen)
-		local cashLabel = CashScreen:FindFirstChild("CashFrame"):FindFirstChild("CashLabel")
+	task.spawn(function()
+		self._maid:GiveTask(render:Subscribe(function(CashScreen)
+			local cashLabel = CashScreen:FindFirstChild("CashFrame"):FindFirstChild("CashLabel")
 
-		local playerData = Players.LocalPlayer:WaitForChild("PlayerData")
-		local cashValue = playerData:WaitForChild("Cash")
+			local playerData = Players.LocalPlayer:WaitForChild("PlayerData")
+			local cashValue = playerData:WaitForChild("Cash")
 
-		cashLabel.Text = `<b>$999,999</b>`
+			cashLabel.Text = `<b>$999,999</b>`
 
-		cashValue.Changed:Connect(function(value)
-			cashLabel.Text = `<b>${value}</b>`
-		end)
-	end))
+			cashValue.Changed:Connect(function(value)
+				cashLabel.Text = `<b>${value}</b>`
+			end)
+		end))
+	end)
 end
 
 return CashGuiServiceClient
