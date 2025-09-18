@@ -33,12 +33,3 @@ To build the game, you want to do the following
 ## Adding new packages
 
 To add new packages you can run `npm install @quenty/package-name` or whatever the package you want.
-
-**Copyright (C) @ivadsiuls 2025. All Rights Reserved.**
-
-> [!NOTE]
-> This software is protected by copyright law.
-> You may not copy, modify, distribute, or use this project in any way without express permission from the creator.
-
-> [!WARNING]
-> This is a private repository. Sharing or showing the code inside this repository is strictly forbidden and will result in being removed from the team and possible legal action.
