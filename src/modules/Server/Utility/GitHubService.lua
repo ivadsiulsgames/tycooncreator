@@ -56,7 +56,7 @@ function GitHubService:SetVersionValue()
 
 		local owner = "ivadsiulsgames"
 		local repo = "tycooncreator"
-		local token = "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"
+		local token = ""
 
 		local latestRelease = getLatestRelease(owner, repo, token)
 		if latestRelease then
