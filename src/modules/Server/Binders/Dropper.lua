@@ -1,15 +1,12 @@
 local require = require(script.Parent.loader).load(parent)
 
 local AttributeValue = require("AttributeValue")
-local Binder = require("Binder")
-local Maid = require("Maid")
-local RxAttributeUtils = require("RxAttributeUtils")
-local RxInstanceUtils = require("RxInstanceUtils")
-local ValueObject = require("ValueObject")
-local Debris = game:GetService("Debris")
 local BaseObject = require("BaseObject")
+local Binder = require("Binder")
 local Rx = require("Rx")
 local RxBrioUtils = require("RxBrioUtils")
+local RxInstanceUtils = require("RxInstanceUtils")
+local ValueObject = require("ValueObject")
 
 local CashPart = require("CashPart")
 

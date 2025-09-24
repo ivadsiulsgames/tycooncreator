@@ -20,7 +20,7 @@ function CashPart.new(part: BasePart, _serviceBag: ServiceBag.ServiceBag)
 
 	self.Merging = AttributeValue.new(self._obj, "Merging", false)
 
-	Rx.combineLatest({
+	self._maid:Add(Rx.combineLatest({
 		id = self.Id:Observe(),
 		owner = self.Owner:Observe(),
 		touched = Rx.fromSignal(self._obj.Touched),
@@ -47,7 +47,7 @@ function CashPart.new(part: BasePart, _serviceBag: ServiceBag.ServiceBag)
 			self.Merging.Value = true
 			self.Cash.Value += touchedCash
 			state.touched:Destroy()
-		end)
+		end))
 
 	return self
 end
