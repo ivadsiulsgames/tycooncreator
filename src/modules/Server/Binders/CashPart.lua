@@ -1,39 +1,55 @@
-local CollectionService = game:GetService("CollectionService")
-
 local require = require(script.Parent.loader).load(script)
 
+local HttpService = game:GetService("HttpService")
+
+local AttributeValue = require("AttributeValue")
+local BaseObject = require("BaseObject")
 local Binder = require("Binder")
-local Maid = require("Maid")
+local Rx = require("Rx")
 local ServiceBag = require("ServiceBag")
 
-local CashPart = {}
+local CashPart = setmetatable({}, BaseObject)
 CashPart.__index = CashPart
 
-local function onTouched(part, otherPart, _serviceBag: ServiceBag.ServiceBag)
-	if not CollectionService:HasTag(otherPart, "CashPart") then
-		return
-	end
+function CashPart.new(part: BasePart, _serviceBag: ServiceBag.ServiceBag)
+	local self = setmetatable(BaseObject.new(part), CashPart)
 
-	if
-		otherPart:GetAttribute("Owner") == part:GetAttribute("Owner")
-		and otherPart:GetAttribute("Id") < part:GetAttribute("Id")
-	then
-		part:SetAttribute("Merging", true)
-		part:SetAttribute("CashValue", part:GetAttribute("CashValue") + otherPart:GetAttribute("CashValue"))
-		otherPart:Destroy()
-	end
-end
+	self.Id = AttributeValue.new(self._obj, "Id", HttpService:GenerateGUID(false))
+	self.Owner = AttributeValue.new(self._obj, "Owner", 0)
+	self.Cash = AttributeValue.new(self._obj, "Cash", 0)
 
-function CashPart.new(part, _serviceBag: ServiceBag.ServiceBag)
-	local maid = Maid.new()
+	self.Merging = AttributeValue.new(self._obj, "Merging", false)
 
-	part.Touched:Connect(function(otherPart)
-		onTouched(part, otherPart, _serviceBag)
-	end)
+	self._maid:Add(Rx.combineLatest({
+		id = self.Id:Observe(),
+		owner = self.Owner:Observe(),
+		touched = Rx.fromSignal(self._obj.Touched),
+	})
+		:Pipe({
+			Rx.where(function(state)
+				local touchedId = state.touched:GetAttribute("Id")
+				local touchedOwner = state.touched:GetAttribute("Owner")
 
-	return setmetatable({
-		_maid = maid,
-	}, CashPart)
+				if not touchedId or not touchedOwner then
+					return false
+				end
+
+				if not state.id or not state.owner then
+					return false
+				end
+
+				return touchedOwner == state.owner and touchedId < state.id
+			end),
+		})
+		:Subscribe(function(state)
+			local touchedCash = state.touched:GetAttribute("Cash") or 0
+
+			self.Merging.Value = true
+			self.Cash.Value += touchedCash
+			state.touched:Destroy()
+		end))
+
+	return self
 end
 
 function CashPart:Destroy()
@@ -41,6 +57,4 @@ function CashPart:Destroy()
 	setmetatable(self, nil)
 end
 
-local binder = Binder.new("CashPart", CashPart)
-
-return binder
+return Binder.new("CashPart", CashPart)

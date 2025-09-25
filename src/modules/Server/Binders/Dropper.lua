@@ -1,79 +1,87 @@
-local HttpService = game:GetService("HttpService")
+local require = require(script.Parent.loader).load(parent)
 
-local require = require(script.Parent.loader).load(script)
-
+local AttributeValue = require("AttributeValue")
+local BaseObject = require("BaseObject")
 local Binder = require("Binder")
-local Maid = require("Maid")
-local RxAttributeUtils = require("RxAttributeUtils")
-local Debris = game:GetService("Debris")
+local Rx = require("Rx")
+local RxBrioUtils = require("RxBrioUtils")
+local RxInstanceUtils = require("RxInstanceUtils")
+local ValueObject = require("ValueObject")
 
-local Dropper = {}
+local CashPart = require("CashPart")
+
+local ServiceBag = require("ServiceBag")
+
+local CASH_LIFETIME = 90
+
+local Dropper = setmetatable({}, BaseObject)
 Dropper.__index = Dropper
 
-local function createCashPart(_, dropperPart, cashVal)
-	local newPart = dropperPart:Clone()
+function Dropper.new(model, serviceBag: ServiceBag.ServiceBag)
+	local self = setmetatable(BaseObject.new(model), Dropper)
+	self._serviceBag = assert(serviceBag, "No serviceBag")
+	self._cashPart = serviceBag:GetService(CashPart)
 
-	newPart.Position = dropperPart.Position - Vector3.new(0, (dropperPart.Size.Y / 2) + 1, 0)
-	newPart.Anchored = false
+	self.Enabled = AttributeValue.new(self._obj, "Enabled", true)
 
-	newPart.Name = "cashPart"
+	self.Owner = AttributeValue.new(self._obj, "Owner", 0)
+	self.Cash = AttributeValue.new(self._obj, "Cash", 3)
+	self.Rate = AttributeValue.new(self._obj, "Rate", 3)
 
-	newPart:AddTag("CashPart")
-	newPart:SetAttribute("Id", HttpService:GenerateGUID(false))
-	newPart:SetAttribute("CashValue", cashVal)
-	newPart:SetAttribute("Owner", dropperPart.Parent:GetAttribute("Owner"))
+	self.DropperPart = self._maid:Add(
+		ValueObject.fromObservable(
+			RxInstanceUtils.observeLastNamedChildBrio(self._obj, "BasePart", "DropperPart"):Pipe({
+				RxBrioUtils.flattenToValueAndNil,
+			})
+		)
+	)
 
-	Debris:AddItem(newPart, 90)
-
-	newPart.Parent = workspace
-end
-
-local function startLoop(model, maid)
-	if not model:FindFirstAncestor("Workspace") then
-		return
-	end
-	if model:GetAttribute("Looping") == true then
-		return
-	end
-
-	model:SetAttribute("Looping", true)
-
-	local dropperPart = model.DropperPart
-
-	local rate
-
-	maid:GiveTask(RxAttributeUtils.observeAttribute(model, "Rate", 3):Subscribe(function(value)
-		rate = value
-	end))
-
-	local cashVal
-
-	maid:GiveTask(RxAttributeUtils.observeAttribute(model, "CashValue", 3):Subscribe(function(value)
-		cashVal = value
-	end))
-
-	model:SetAttribute("Enabled", true)
-
-	maid:GiveTask(task.spawn(function()
-		while true do
-			createCashPart(maid, dropperPart, cashVal)
-			task.wait(rate)
+	self._maid:Add(Rx.combineLatest({
+		droppedTemplate = self.DropperPart:Observe(),
+		_interval = self:_observeRewardInterval(),
+	}):Subscribe(function(state)
+		if not state.droppedTemplate then
+			return
 		end
+
+		self:_promiseBoundCashPart(state.droppedTemplate):Then(function(boundCash)
+			boundCash.Cash.Value = self.Cash.Value
+			boundCash.Owner.Value = self.Owner.Value
+
+			self._maid:Add(task.delay(CASH_LIFETIME, boundCash.Destroy, boundCash))
+		end)
 	end))
+
+	return self
 end
 
-function Dropper.new(model)
-	local maid = Maid.new()
+function Dropper:_promiseBoundCashPart(template)
+	local droppedPart = template:Clone()
+	droppedPart.Name = "cashPart"
+	droppedPart.Position -= Vector3.new(0, (droppedPart.Size.Y / 2) + 1, 0)
+	droppedPart.Anchored = false
 
-	startLoop(model, maid)
+	self._cashPart:Tag(droppedPart)
 
-	model:GetPropertyChangedSignal("Parent"):Connect(function()
-		startLoop(model, maid)
-	end)
+	droppedPart.Parent = workspace
 
-	return setmetatable({
-		_maid = maid,
-	}, Dropper)
+	return self._cashPart:Promise(droppedPart)
+end
+
+function Dropper:_observeRewardInterval()
+	return self.Enabled:Observe():Pipe({
+		Rx.switchMap(function(enabled)
+			if not enabled then
+				return Rx.EMPTY
+			end
+
+			return self.Rate:Observe():Pipe({
+				Rx.switchMap(function(rate)
+					return Rx.interval(rate)
+				end),
+			})
+		end),
+	})
 end
 
 function Dropper:Destroy()
@@ -81,6 +89,4 @@ function Dropper:Destroy()
 	setmetatable(self, nil)
 end
 
-local binder = Binder.new("Dropper", Dropper)
-
-return binder
+return Binder.new("Dropper", Dropper)
