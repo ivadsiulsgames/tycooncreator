@@ -10,7 +10,7 @@
     "Sandbox",
     "Tycoon Creator"
   ],
-  "license": "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License",
+  "license": "GNU Affero General Public License Version 3",
   "dependencies": {
     "@quenty/attributeutils": "^14.18.0",
     "@quenty/baseobject": "^10.9.0",
